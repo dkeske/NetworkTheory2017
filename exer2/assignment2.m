@@ -1,6 +1,6 @@
 filename = "out.loc-gowalla_edges"
 function [A] = load_sparse(filename)
-  E = load("out.loc-gowalla_edges");
+  E = load(filename);
   n = max(max(E));
   A = sparse(E(:,1), E(:,2), 1, n, n);
   A = A + A';
@@ -8,11 +8,10 @@ endfunction
 
 function [size volume] = compute_statistics(A)
   size = size(A)(1);
-  %volume = sum(sum(A))/2;
   volume = nnz(A)/2;
 endfunction 
 
-A = load_sparse("out.loc-gowalla_edges");
+A = load_sparse(filename);
 
 [size, volume] = compute_statistics(A);
 
@@ -44,6 +43,9 @@ P = cumulative_degree_distribution(A);
 
 stairs(P)
 set(gca, 'XScale', 'log', 'YScale', 'log')
+xlabel("P(X>=d)");
+ylabel("Frequency");
+axis ("tight", "on");
 
 function gini = gini_coefficient(degrees)
   nominator = 0;
