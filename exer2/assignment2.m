@@ -33,7 +33,7 @@ scatter(1:max(degrees), C);
 set(gca, 'XScale', 'log', 'YScale', 'log')
 xlabel("Degree(d)");
 ylabel("Frequency")
-print -deps degree_frequency.eps
+print -depsc degree_frequency.eps
 
 function [P] = cumulative_degree_distribution(A)
   C = degree_distribution(A);
@@ -49,7 +49,7 @@ set(gca, 'XScale', 'log', 'YScale', 'log')
 ylabel("P(X>=d)");
 xlabel("Degree");
 axis ("tight", "on");
-print -deps cumulative_degree_distribution.eps
+print -depsc cumulative_degree_distribution.eps
 
 function gini = gini_coefficient(degrees)
   nominator = 0;
