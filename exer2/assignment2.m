@@ -19,32 +19,34 @@ function [degrees] = compute_degrees(A)
   degrees = sum(A);
 endfunction 
 
-compute_degrees(A);
+degrees = compute_degrees(A);
 
 function [C] = degree_distribution(A)
   degrees = compute_degrees(A);
-  [a,b]=hist(degrees,unique(degrees));
-  C(b) = a;
+  freq = hist(degrees, 1:max(degrees));
+  C = freq;
 endfunction  
  
 C = degree_distribution(A);
 
-scatter([1 : length(C)], C);
+scatter(1:max(degrees), C);
 set(gca, 'XScale', 'log', 'YScale', 'log')
 xlabel("Degree(d)");
 ylabel("Frequency")
 
 function [P] = cumulative_degree_distribution(A)
   C = degree_distribution(A);
-  P = fliplr(cumsum(fliplr(C))/sum(C));
+  P = flip(cumsum(flip(C)));
+  %P = (cumsum(sort(C))/sum(C));
 endfunction
 
 P = cumulative_degree_distribution(A);
+uniq_deg = unique(degrees);
 
-stairs(P)
+stairs(1:max(degree), P)
 set(gca, 'XScale', 'log', 'YScale', 'log')
-xlabel("P(X>=d)");
-ylabel("Frequency");
+ylabel("P(X>=d)");
+xlabel("Frequency");
 axis ("tight", "on");
 
 function gini = gini_coefficient(degrees)
