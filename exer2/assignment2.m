@@ -37,16 +37,16 @@ ylabel("Frequency")
 function [P] = cumulative_degree_distribution(A)
   C = degree_distribution(A);
   P = flip(cumsum(flip(C)));
-  %P = (cumsum(sort(C))/sum(C));
+  P = P/max(P);
 endfunction
 
 P = cumulative_degree_distribution(A);
 uniq_deg = unique(degrees);
 
-stairs(1:max(degree), P)
+stairs(1:max(degrees), P)
 set(gca, 'XScale', 'log', 'YScale', 'log')
 ylabel("P(X>=d)");
-xlabel("Frequency");
+xlabel("Degree");
 axis ("tight", "on");
 
 function gini = gini_coefficient(degrees)
