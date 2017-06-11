@@ -100,7 +100,7 @@ P = sparse(n,n);
 [a,b] = find(C==1);
 for i = [1:length(a)]
   if c_deg(a(i))>0
-    P(a(i),b(i)) = 1/c_deg(a(i));
+    P(a(i),a(i)) = 1/c_deg(a(i));
   endif
 endfor
 
