@@ -1,3 +1,5 @@
+%Task 1
+
 filename = "prediction-graph.txt"
 function [A] = load_sparse(filename)
   E = dlmread(filename, ' ',[2, 0, 817037, 1]);
@@ -21,11 +23,17 @@ endfunction
 
 A = load_sparse_normal(filename);
 
-e = eig(A);
+[VEC, VAL] = eig(A);
 
-min_ = min(e);
+VAL = diag(VAL);
 
-max_ = max(e);
+min_ = min(VAL)
+
+max_ = max(VAL)
+
+VAL
+
+%Task 2
 
 function [degrees] = compute_degrees(A)
   degrees = sum(A);
@@ -35,18 +43,21 @@ facebook = "out.facebook-wosn-links";
 
 FB = load_sparse(facebook);
 
-eg = eigs(FB, 10);
+[eg_vec, eg] = eigs(FB,1);
+eg = diag(eg);
+eg_vec = eg_vec*-1;
+    
 
 function [val_final, vec_final] = eig_power(A)
   x = compute_degrees(A)';
-  diff = 10;
+  diff = 1e-10;
   vec_final = x;
   val_final = 0;
   while(1)
     vec_old = vec_final;
     val_old = val_final;
     vec_final = A*vec_final;
-    val_final = max(vec_final);
+    val_final = norm(vec_final);
     vec_final = vec_final/val_final;
     if abs(val_final - val_old)<diff && norm(vec_final-vec_old)<diff
       break;
@@ -56,24 +67,24 @@ end
     
 [val_final, vec_final] = eig_power(FB);
 
-vec_final = vec_final*val_final;
+%vec_final = vec_final*val_final;
 
-vec_final_s = sort(vec_final, "descend")(1:10);
+vec_final_s = sort(vec_final, "descend");
 
-difference = norm(vec_final_s- eg);
+difference = norm(vec_final- eg_vec)
 
 for i = [1:10]
   indicies(i) = find(vec_final == vec_final_s(i));
 endfor
 
-
+indicies
 degrees = compute_degrees(FB);
 
-max_deg = sort(degrees, "descend")(1:10);
+max_deg = sort(degrees, "descend")(1:10)
 
 flag = 0;
 for i = [1:10]
-  res = find(degrees == max_deg(i))
+  res = find(degrees == max_deg(i));
   if flag == 1
     flag = 0;
     continue;
@@ -87,12 +98,16 @@ for i = [1:10]
   endif
 endfor
 
-deg_top_eig = degrees(indicies);
+indicies_d
+
+deg_top_eig = degrees(indicies)
+
+%Task 3
 
 C = load_sparse_directed("out.munmun_twitter_social");
 alpha = 0.15;
 
-c_deg = compute_degrees(C);
+c_deg = sum(C,2);
 n=size(C)(1);
 
 P = sparse(n,n);
@@ -106,13 +121,24 @@ endfor
 
 zero_deg = find(c_deg==0);
 for i = [1:length(zero_deg)]
-  for j = [1:n]
-    P(zero_deg(i),j) = 1/n;
-  endfor
+  P(zero_deg(i),:) = 1/n;
 endfor
+
+
+
+%J = ones(1,n)/n;
+%G = (1-alpha)*P + alpha*J;
+diff = 1e-5;
+v = ones(1,n)/n;
+while 1
+  old_v = v;
+  v = (v*(1-alpha)*P) + v*alpha*(ones(1,n)/n)';
+  if norm(v-old_v)<diff
+    break;
+  endif
+endwhile
   
-
-
+max(v)
 
 
 
