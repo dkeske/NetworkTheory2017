@@ -43,9 +43,11 @@ facebook = "out.facebook-wosn-links";
 
 FB = load_sparse(facebook);
 
-[eg_vec, eg] = eigs(FB,1);
-eg = diag(eg);
-eg_vec = eg_vec*-1;
+function [eg_vec, eg] = eigs_reg(A,n)
+  [eg_vec, eg] = eigs(A,n);
+  eg = diag(eg);
+  eg_vec = eg_vec*-1;
+endfunction
     
 
 function [val_final, vec_final] = eig_power(A)
@@ -64,6 +66,8 @@ function [val_final, vec_final] = eig_power(A)
     end
   end
 end   
+
+[eg_vec, eg] = eigs_reg(FB,1);
     
 [val_final, vec_final] = eig_power(FB);
 
@@ -110,24 +114,19 @@ alpha = 0.15;
 c_deg = sum(C,2);
 n=size(C)(1);
 
-P = sparse(n,n);
+P1 = sparse(n,n);
+P2 = sparse(n,n);
 
-[a,b] = find(C==1);
-for i = [1:length(a)]
-  if c_deg(a(i))>0
-    P(a(i),a(i)) = 1/c_deg(a(i));
-  endif
-endfor
+c_deg_inv = c_deg.^-1;
+c_deg_inv(find(c_deg==0))=0;
 
-zero_deg = find(c_deg==0);
-for i = [1:length(zero_deg)]
-  P(zero_deg(i),:) = 1/n;
-endfor
+P1 = (diag(c_deg_inv))*C;
+c_deg(c_deg==0) = -1;
+c_deg(c_deg>0) = 0;
+c_deg(c_deg==-1) = 1;
 
+P2 = (1/n)*c_deg*sparse(ones(1,n));
 
-
-%J = ones(1,n)/n;
-%G = (1-alpha)*P + alpha*J;
 diff = 1e-5;
 v = ones(1,n)/n;
 while 1
@@ -138,11 +137,15 @@ while 1
   endif
 endwhile
   
-max(v)
+max_page_rank = sort(v, "descend");
+max_page_rank(1:10)
 
+in_degree = sum(C,1);
+in_degree_s = sort(in_degree, "descend");
 
-
-
+for i = [1:10]
+  find(in_degree == in_degree_s(i))
+endfor
 
     
     
