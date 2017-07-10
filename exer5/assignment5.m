@@ -6,7 +6,11 @@ function [A] = load_sparse_normal(filename)
 endfunction 
 
 function no_of_triangles = get_no_of_triangles(A_sparse)
-   path_3 = diag(A_sparse.'*A_sparse.'*A_sparse);
+   % the diagonal of the matrix holds the loops, we have to remove it
+   A_sparse_no_loops = A_sparse - diag(diag(A_sparse)); 
+   path_3 = diag(A_sparse_no_loops.'*A_sparse_no_loops.'*A_sparse_no_loops);
+   % we have to divide by 2 because the graph is undirected => we calculte everything twice
+   % we have to divide by 3 because we count the triangle once for each node
    no_of_triangles = sum(path_3)/6;
 endfunction
 
@@ -21,18 +25,19 @@ n_react = get_no_of_triangles(react)
 amz = "out.com-amazon"; 
 amazon = load_sparse_normal(amz);
 n_amazon = get_no_of_triangles(amazon) 
- 
-% subset of 10000
- function [A] = load_sparse_fb(filename)
-  E = dlmread(filename, ' ',[2, 0, 10000, 1]);
+
+
+function [A] = load_sparse_fb(filename)
+  E = dlmread(filename, ' ',[2, 0, 817037, 1]);
   n = max(max(E));
   A = sparse(E(:,1), E(:,2), 1, n, n);
   A = A + A';
 endfunction  
 
 function [local_cc] = get_local_clustering_coefficient(A_sparse)
-   path_3 = diag(A_sparse.'*A_sparse.'*A_sparse);
-   degrees = sum(A_sparse);
+   A_sparse_no_loops = A_sparse - diag(diag(A_sparse)); 
+   path_3 = diag(A_sparse_no_loops.'*A_sparse_no_loops.'*A_sparse_no_loops);
+   degrees = sum(A_sparse_no_loops);
    wedges = degrees.*(degrees - 1);
    local_cc = path_3./wedges';
 endfunction        
